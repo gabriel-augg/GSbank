@@ -50,6 +50,9 @@ const operations = () => {
 operations()
 
 function exit(){
+    if(fs.existsSync('loggedAccount.json')){
+        fs.unlinkSync('loggedAccount.json', err => log(err))
+    }
     log(chalk.bgGray.black.bold('Obrigado por usar o GSBank!'))
     process.exit()
 }
@@ -149,6 +152,9 @@ function login(){
                 recoverPassword()
                 break;
             case 'Voltar':
+                if(fs.existsSync('loggedAccount.json')){
+                    fs.unlinkSync('loggedAccount.json', err => log(err))
+                }
                 operations()
                 break;
             default:
