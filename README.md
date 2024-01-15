@@ -15,7 +15,7 @@ Se o projeto estiver funcionando corretamente, quando executado o comando, o ter
 ### Funcionalidades listadas
 
 - Criação de conta
-- Recuperação de conta
+- Recuperação de senha
 - Login
 - Depositar
 - Sacar
