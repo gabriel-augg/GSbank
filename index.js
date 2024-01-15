@@ -7,6 +7,7 @@ const clear = console.clear
 
 const operations = () => {
     clear()
+    log(chalk.bgMagenta.white.bold('----------GSBank-----------'))
     inquirer.prompt([
         {
             type: 'list',
@@ -44,13 +45,15 @@ function exit(){
     if(fs.existsSync('loggedAccount.json')){
         fs.unlinkSync('loggedAccount.json', err => log(err))
     }
-    log(chalk.bgGray.white.bold('Obrigado por usar o GSBank!'))
+    clear()
+    log(chalk.bgMagenta.white.bold('Obrigado por usar o GSBank!'))
     process.exit()
 }
 
 function createAccount(){
-    log(chalk.bgGreen.white.bold('Obrigado por escolher o GSBank, o Banco que realmente se importa com você. \n'))
-    log(chalk.green('Para começar, nós precisamos que você digite o seu nome, o seu último nome e uma senha. \n'))
+    clear()
+    log(chalk.bgMagenta.white.bold('Obrigado por escolher o GSBank, o Banco que realmente se importa com você. \n'))
+    log(chalk.magenta.bold('Para começar, nós precisamos que você digite o seu nome, o seu último nome e uma senha. \n'))
     buildAccount()
 }
 
@@ -58,7 +61,7 @@ function buildAccount(){
     inquirer.prompt([
         {
             name: 'userName',
-            message: 'Primeiro, digite o seu nome: '
+            message: 'Primeiro, precisamos que você digite o seu nome: '
         },
         {
             name: 'lastName',
@@ -66,11 +69,11 @@ function buildAccount(){
         },
         {
             name: 'password',
-            message: 'E agora digite uma senha (minimo: 8 caracteres): '
+            message: 'Para sua segurança, digite uma senha (minimo: 8 caracteres): '
         },
         {
             name: 'repassword',
-            message: 'Por fim, digite sua senha novamente para confirmar'
+            message: 'Por fim, digite sua senha novamente para gente confirmar'
         }
     ])
     .then( answer => {
@@ -81,9 +84,9 @@ function buildAccount(){
         const accountNumber = createAccountNumber()
 
         if(!userName || !lastName || !password || password != repassword || password.length < 8){
-            clear()
-            log(chalk.bgRed.white.bold('Parece que ocorreu um erro, por favor, tente novamente.'))
-            return buildAccount()
+
+            const message = 'Parece que ocorreu um erro, por favor, selecione uma das opções abaixo'
+            return erroOptions(buildAccount, message, operations)
         }
 
         if(!fs.existsSync('accounts')){
@@ -95,14 +98,14 @@ function buildAccount(){
 
         clear()
 
-        log(chalk.bgGray.white.bold(`Só um momento ${userName}, estamos criando a sua conta...`))
+        log(chalk.bgMagenta.white.bold(`Só um momento ${userName}, estamos criando a sua conta...`))
 
         setTimeout(() => {
             clear()
-            log(chalk.bgGreen.white.bold('PARABÉNS!\n'))
-            log(chalk.bgGray.white.bold(`Sua conta foi criada com sucesso e agora você pode acessa-la com a sua senha e o número abaixo.`))
-            log(chalk.bgGray.white.bold("Guarde esse número em algum lugar, você só pode logar com ele.\n"))
-            log(chalk.green.bold(`Números: ${accountNumber}`))
+            log(chalk.bgMagenta.white.bold('PARABÉNS!\n'))
+            log(chalk.bgMagenta.white.bold(`Sua conta foi criada com sucesso e agora você pode acessa-la com a sua senha e o número abaixo.`))
+            log(chalk.bgMagenta.white.bold("Guarde esse número em algum lugar, você só pode logar com ele.\n"))
+            log(chalk.magenta.bold(`Número: ${accountNumber}`))
         }, 3000)
 
         setTimeout(()=> {
@@ -124,6 +127,7 @@ function createAccountNumber(){
 
 function login(){
     clear()
+    log(chalk.bgMagenta.white.bold('----------GSBank-----------'))
     inquirer.prompt([
         {
             type: 'list',
@@ -175,9 +179,9 @@ function loginWithNumberAndPassword(){
         log(accountNumber, password)
 
         if(!checkAccount(accountNumber, password)){
-            clear()
-            log(chalk.bgRed.white.bold('Essa conta não existe ou a senha está incorreta!'))
-            return loginWithNumberAndPassword()
+
+            const message = 'Essa conta não existe ou a senha está incorreta, por favor, selecione uma das opções abaixo'
+            return erroOptions(loginWithNumberAndPassword, message, login)
         }
 
 
@@ -186,14 +190,24 @@ function loginWithNumberAndPassword(){
 
         fs.writeFileSync('loggedAccount.json', JSON.stringify(accountData), err => log(err + ' FOIIIIII'))
 
+
+
         clear()
-        log(chalk.bgGreen.white.bold('Logado com sucesso! Agora você pode acessar todos os recursos da sua conta.'))
+
+        log(chalk.bgMagenta.white.bold('Aguarde só um momento que estamos logando na sua conta...'))
+
+
 
 
         setTimeout(()=> {
             clear()
+            log(chalk.bgMagenta.white.bold('Logado com sucesso! Agora você pode acessar todos os recursos da sua conta.'))
+        },5000)
+
+        setTimeout(()=> {
+            clear()
             loggedOperations()
-        },3000)
+        },8000)
 
     })
     .catch(err => log(err))
@@ -232,6 +246,7 @@ function getLoggedAccountData(){
 }
 
 function loggedOperations(){
+    log(chalk.bgMagenta.white.bold('----------GSBank-----------'))
     inquirer.prompt([
         {
             type: 'list',
@@ -285,15 +300,15 @@ function deposit(){
         account.balance = parseFloat(account.balance) + parseFloat(amount)
         console.log(account.balance)
 
-        if(!amount){
-            log(chalk.bgRed.white.bold('Parece que houve um erro, por favor, digite novamente.'))
-            return deposit()
+        if(!amount || amount <= 0){
+            const message = 'Parece que houve um erro, por favor, selecione uma das opções abaixo'
+            return erroOptions(deposit, message, loggedOperations)
         }
 
         fs.writeFileSync('loggedAccount.json', JSON.stringify(account), err => log(err))
         fs.writeFileSync(`accounts/${account.accountNumber}.json`, JSON.stringify(account),err => log(err))
         clear()
-        log(chalk.green.bold(`${account.name}, o saldo de R$${amount} foi adicionado com sucesso!`))
+        log(chalk.bgMagenta.white.bold(`${account.name}, o saldo no valor de R$${amount} foi adicionado com sucesso!`))
         setTimeout(()=> {
             clear()
             loggedOperations()
@@ -304,7 +319,7 @@ function deposit(){
 
 function getAccountBalance(){
     const account = getLoggedAccountData()
-    console.log(chalk.bgGray.white.bold(`${account.name}, O seu saldo é de R$${account.balance}.`))
+    console.log(chalk.bgMagenta.white.bold(`${account.name}, O seu saldo é de R$${account.balance}.`))
     setTimeout(()=> {
         clear()
         loggedOperations()
@@ -312,6 +327,7 @@ function getAccountBalance(){
 }
 
 function widthdraw(){
+    clear()
     inquirer.prompt([
         {
             name: 'amount',
@@ -322,14 +338,15 @@ function widthdraw(){
         const amount = answer['amount']
         const account = getLoggedAccountData()
 
-        if(!amount){
-            log(chalk.bgRed.white.bold('Parece que houve um erro, por favor, digite novamente.'))
-            return widthdraw()
+        if(!amount || amount <= 0){
+            const message = 'Parece que houve um erro, por favor, selecione uma das opções abaixo'
+            return erroOptions(widthdraw, message, loggedOperations)
         }
 
         if(amount > account.balance){
-            log(chalk.bgRed.white.bold('Valor insuficiente para saque, tente novamente!'))
-            return widthdraw()
+
+            const message = 'Valor insuficiente para saque, por favor, selecione uma das opções abaixo'
+            return erroOptions(widthdraw, message, loggedOperations)
         }
 
         account.balance = parseFloat(account.balance) - parseFloat(amount)
@@ -337,7 +354,7 @@ function widthdraw(){
         fs.writeFileSync('loggedAccount.json', JSON.stringify(account), err => log(err))
         fs.writeFileSync(`accounts/${account.accountNumber}.json`, JSON.stringify(account),err => log(err))
         clear()
-        log(chalk.green.bold(`${account.name}, o saque de R$${amount} foi efetuado com sucesso!`))
+        log(chalk.bgMagenta.white.bold(`${account.name}, o saque no valor de R$${amount} foi concluído com sucesso!`))
         setTimeout(()=> {
             clear()
             loggedOperations()
@@ -358,14 +375,16 @@ function investment(){
         const amount = answer['amount']
         const account = getLoggedAccountData()
 
-        if(!amount || amount < 0){
-            log(chalk.bgRed.white.bold('Parece que houve um erro, por favor, digite novamente.'))
-            return investment()
+        if(!amount || amount <= 0){
+            
+            const message = 'Parece que houve um erro, por favor, selecione uma das opções abaixo'
+            return operations(investment, message, loggedOperations)
         }
 
         if(account.balance < amount){
-            log(chalk.bgRed.white.bold('Parece que você não tem esse valor disponível para investimento. Tente novamente'))
-            return investment()
+
+            const message = 'Parece que você não tem esse valor disponível para investimento, por favor, selecione uma das opções abaixo'
+            return erroOptions(investment, message, loggedOperations)
         }
 
         account.investment = parseFloat(account.investment) + parseFloat(amount)
@@ -374,7 +393,7 @@ function investment(){
         fs.writeFileSync('loggedAccount.json', JSON.stringify(account), err => log(err))
         fs.writeFileSync(`accounts/${account.accountNumber}.json`, JSON.stringify(account),err => log(err))
         clear()
-        log(chalk.green.bold(`${account.name}, o investimento de R$${amount} foi efetuado com sucesso!`))
+        log(chalk.bgMagenta.white.bold(`${account.name}, o investimento no valor de R$${amount} foi concluído com sucesso!`))
         setTimeout(()=> {
             clear()
             loggedOperations()
@@ -387,7 +406,7 @@ function investment(){
 function getInvestment(){
     clear()
     const account = getLoggedAccountData()
-    log(chalk.bgGray.white.bold(`${account.name}, você tem investido um valor de R$${account.investment}.`))
+    log(chalk.bgMagenta.white.bold(`${account.name}, você tem investido um valor de R$${account.investment}.`))
     setTimeout(()=> {
         clear()
         loggedOperations()
@@ -406,15 +425,14 @@ function widthdrawInvestment(){
         const amount = answer['amount']
         const account = getLoggedAccountData()
 
-        if(!amount || amount < 0){
-            log(chalk.bgRed.white.bold('Parece que houve um erro, por favor, digite novamente.'))
-            return widthdrawInvestment()
+        if(!amount || amount <= 0){
+            const message = 'Parece que houve um erro, por favor, selecione uma das opções abaixo'
+            return erroOptions(widthdrawInvestment, message, loggedOperations)
         }
         
         if(account.investment < amount){
-            clear()
-            log(chalk.bgRed.white.bold('Valor de saque de investimento indisponivel, por favor, digite um valor menor.'))
-            return widthdrawInvestment()
+            const message = 'Valor de saque de investimento indisponivel, por favor, selecione uma das opções abaixo'
+            return erroOptions(widthdrawInvestment, message, loggedOperations)
         }
 
         account.investment = parseFloat(account.investment) - parseFloat(amount)
@@ -423,7 +441,7 @@ function widthdrawInvestment(){
         fs.writeFileSync('loggedAccount.json', JSON.stringify(account), err => log(err))
         fs.writeFileSync(`accounts/${account.accountNumber}.json`, JSON.stringify(account),err => log(err))
         clear()
-        log(chalk.green.bold(`${account.name}, o valor de R$${amount} foi sacado com sucesso do investimento!`))
+        log(chalk.bgMagenta.white.bold(`${account.name}, o saque de investimento no valor de R$${amount} foi concluído com sucesso!`))
         setTimeout(()=> {
             clear()
             loggedOperations()
@@ -433,7 +451,8 @@ function widthdrawInvestment(){
 }
 
 function recoverPassword(){
-
+    clear()
+    log(chalk.bgMagenta.white.bold('-----Recuperação de senha-----'))
     inquirer.prompt([
         {
             name: 'accountNumber',
@@ -445,19 +464,18 @@ function recoverPassword(){
 
 
         if(!accountNumber){
-            log(chalk.bgRed.white.bold('Parece que houve um erro, por favor, digite novamente.'))
-            return recoverPassword()
+            const message = 'Parece que houve um erro, por favor, selecione uma das opções abaixo'
+            return erroOptions(recoverPassword, message, operations)
         }
 
         if(!fs.existsSync(`accounts/${accountNumber}.json`)){
-            clear()
-            log(chalk.bgRed.white.bold('Parece que essa conta não existe, por favor, digite novamente o número da conta.'))
-            return recoverPassword()
+            const message = 'Parece que essa conta não existe, por favor, selecione uma das opções abaixo'
+            return erroOptions(recoverPassword, message, operations)
         }
 
         const account = getAccountData(accountNumber)
 
-        log(chalk.bgGray.white.bold('Para prosseguir com a sua alteração de senha, precisamos que você digite o seu nome e seu último nome corretamente.'))
+        log(chalk.bgMagenta.white.bold('Para prosseguir com a sua alteração de senha, precisamos que você digite o seu nome e seu último nome corretamente.'))
 
         inquirer.prompt([
             {
@@ -466,7 +484,7 @@ function recoverPassword(){
             },
             {
                 name: 'lastName',
-                message: 'Seu último nome: '
+                message: 'Continuando, precisamos do seu último nome: '
             },
             {
                 name: 'password',
@@ -474,7 +492,7 @@ function recoverPassword(){
             },
             {
                 name: 'repassword',
-                message: 'E por fim, precisamos que você repita sua senha só para confirmar: '
+                message: 'E por fim, precisamos que você digite novamente sua senha só para a gente confirmar: '
             }
         ])
         .then( answer => {
@@ -485,17 +503,16 @@ function recoverPassword(){
             const repassword = answer['repassword']
 
             if(!userName || !lastName || !password || password != repassword || password.length < 8){
-                clear()
-                log(chalk.bgRed.white.bold('Parece que ocorreu um erro, por favor, tente novamente.'))
-                return recoverPassword()
+
+                const message = 'Parece que ocorreu um erro, por favor, selecione uma das opções abaixo'
+                return erroOptions(recoverPassword, message, operations)
             }
 
-            console.log(userName, account.name, lastName, account.lastName)
 
             if(userName != account.name || lastName != account.lastname){
 
-                log(chalk.bgRed.white.bold('Parece que o seu nome ou o seu último nome está incorreto, por favor, digite novamente.'))
-                return recoverPassword()
+                const message = 'Parece que o seu nome ou o seu último nome está incorreto, por favor, selecione uma das opções abaixo'
+                return erroOptions(recoverPassword, message, operations)
             }
 
             account.password = password
@@ -504,7 +521,7 @@ function recoverPassword(){
 
             clear()
 
-            log(chalk.bgGreen.white.bold(`${account.name}, sua senha foi alterada, agora você pode acessar a sua conta.`))
+            log(chalk.bgMagenta.white.bold(`${account.name}, sua senha foi alterada, agora você pode acessar a sua conta.`))
 
             setTimeout(()=>{
                 clear()
@@ -514,6 +531,36 @@ function recoverPassword(){
         .catch(err => log(err))
     })
     .catch(err => log(err))
+}
+
+function erroOptions(tryAgain, message, back){
+    clear()
+    log(chalk.bgRed.white.bold(message))
+
+    setTimeout(()=>{
+        inquirer.prompt([
+            {
+                type: 'list',
+                name: 'action',
+                message: 'Opções disponíveis:',
+                choices: ['Tentar novamente', 'Voltar']
+            }
+        ])
+        .then( answer => {
+            const action = answer['action']
+    
+            if(action == 'Tentar novamente'){
+                tryAgain()
+            } 
+    
+            if(action == 'Voltar'){
+                back()
+            }
+        })
+        .catch(err => log(err))
+    }, 2000)
+
+    
 }
 
 
