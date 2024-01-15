@@ -1,6 +1,6 @@
 # ------GSBank------
 
-**GSBank** é um sistema ATM simulado pelo terminal que usa as arroys keys como teclas de navegação no sistema, onde possui a maioria das funcionalidades de um ATM convencional, como depósito, saque, entre outras funcionalidades. Esse projeto foi feito utilizando recursos simples do Node.JS, utilizando as dependências: Inquirer, Chalk e Fs.
+**GSBank** é um sistema ATM simulado pelo terminal que usa as arroy keys como teclas de navegação padrão. O sistema possui a maioria das funcionalidades de um ATM convencional, como depósito, saque, entre outras funcionalidades. Esse projeto foi feito utilizando recursos simples do Node.JS, como as dependências: Inquirer, Chalk e Fs.
 
 ##### **IMPORTANTE!**
 
