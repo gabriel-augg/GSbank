@@ -4,7 +4,7 @@
 
 ##### **IMPORTANTE!**
 
-> Antes de dar deploy no projeto, certifique-se de que você tem o Node e o npm instalado. Para verificar, basta digitar e executar no terminal: "node -v" e "npm -v". Se após executar o comando retornar a versão, está instalado. Caso contrário, você não tem instalado e deverá instalar o node ou/e o npm. E por fim, execute o comando "npm install' para instalar todas as depêndencias para o projeto funcionar corretamente.
+> Antes de dar deploy no projeto, certifique-se de que você tem o Node e o npm instalado. Para verificar, basta digitar e executar no terminal: "node -v" e "npm -v". Se após executar o comando retornar a versão, está instalado. Caso contrário, você não tem instalado e deverá instalar o node ou/e o npm. E por fim, execute o comando "npm install" para instalar todas as depêndencias para o projeto funcionar corretamente.
 
 Para testar o projeto, execute o camando: **_npm start_**
 
