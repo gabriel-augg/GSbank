@@ -4,15 +4,6 @@ const fs = require('fs')
 const log = console.log
 const clear = console.clear
 
-// pedir nome e sobrenome
-// pedir senha
-// gerar número de conta
-// logar com número de conta e senha
-// recuperar senha
-// recuperar número de conta
-
-// Serviços: Depósito, Saque, Consultar Saldo, Consultar Investimento, Investir e Sair
-
 
 const operations = () => {
     clear()
@@ -53,13 +44,13 @@ function exit(){
     if(fs.existsSync('loggedAccount.json')){
         fs.unlinkSync('loggedAccount.json', err => log(err))
     }
-    log(chalk.bgGray.black.bold('Obrigado por usar o GSBank!'))
+    log(chalk.bgGray.white.bold('Obrigado por usar o GSBank!'))
     process.exit()
 }
 
 function createAccount(){
-    log(chalk.bgGreen.black.bold('Obrigado por escolher o GSBank, o Banco que realmente se importa com você. \n'))
-    log(chalk.green('Para começar, nós precisamos que você digite o seu nome, o seu sobrenome e uma senha.'))
+    log(chalk.bgGreen.white.bold('Obrigado por escolher o GSBank, o Banco que realmente se importa com você. \n'))
+    log(chalk.green('Para começar, nós precisamos que você digite o seu nome, o seu último nome e uma senha. \n'))
     buildAccount()
 }
 
@@ -67,15 +58,15 @@ function buildAccount(){
     inquirer.prompt([
         {
             name: 'userName',
-            message: 'Primeiro, digite o seu primeiro nome: '
+            message: 'Primeiro, digite o seu nome: '
         },
         {
             name: 'lastName',
-            message: 'Digite o seu último nome: '
+            message: 'Agora precisamos do seu último nome: '
         },
         {
             name: 'password',
-            message: 'E agora, digite a sua senha (minimo: 8 caracter): '
+            message: 'E agora digite uma senha (minimo: 8 caracteres): '
         },
         {
             name: 'repassword',
@@ -91,7 +82,7 @@ function buildAccount(){
 
         if(!userName || !lastName || !password || password != repassword || password.length < 8){
             clear()
-            log(chalk.bgRed.black('Parece que ocorreu um erro, por favor, tente novamente.'))
+            log(chalk.bgRed.white.bold('Parece que ocorreu um erro, por favor, tente novamente.'))
             return buildAccount()
         }
 
@@ -104,19 +95,19 @@ function buildAccount(){
 
         clear()
 
-        log(chalk.bgGray.black.bold(`Só um momento ${userName}, estamos criando a sua conta...`))
+        log(chalk.bgGray.white.bold(`Só um momento ${userName}, estamos criando a sua conta...`))
 
         setTimeout(() => {
             clear()
-            log(chalk.bgGreen.black.bold('PARABÉNS!\n'))
-            log(chalk.bgGray.black.bold(`Sua conta foi criada com sucesso e agora você pode acessa-la com o número abaixo e a sua senha.`))
-            log(chalk.bgGray.black.bold("Guarde esse número em algum lugar, você só pode logar com ele.\n"))
+            log(chalk.bgGreen.white.bold('PARABÉNS!\n'))
+            log(chalk.bgGray.white.bold(`Sua conta foi criada com sucesso e agora você pode acessa-la com a sua senha e o número abaixo.`))
+            log(chalk.bgGray.white.bold("Guarde esse número em algum lugar, você só pode logar com ele.\n"))
             log(chalk.green.bold(`Números: ${accountNumber}`))
         }, 3000)
 
         setTimeout(()=> {
             operations()
-        }, 10000)
+        }, 17000)
 
 
     })
@@ -124,10 +115,10 @@ function buildAccount(){
 }
 
 function createAccountNumber(){
-    let accountNumber = Math.floor(Math.random() * 1000)
-    while(fs.existsSync(`accounts/${accountNumber}.json`)){
-        accountNumber = Math.floor(Math.random() * 1000)
-    }
+    let accountNumber;
+    do {
+        accountNumber = Math.floor(Math.random() * 900) + 100
+    } while (fs.existsSync(`accounts/${accountNumber}.json`))
     return accountNumber
 }
 
@@ -185,7 +176,7 @@ function loginWithNumberAndPassword(){
 
         if(!checkAccount(accountNumber, password)){
             clear()
-            log(chalk.bgRed.black.bold('Essa conta não existe ou a senha está incorreta!'))
+            log(chalk.bgRed.white.bold('Essa conta não existe ou a senha está incorreta!'))
             return loginWithNumberAndPassword()
         }
 
@@ -196,7 +187,7 @@ function loginWithNumberAndPassword(){
         fs.writeFileSync('loggedAccount.json', JSON.stringify(accountData), err => log(err + ' FOIIIIII'))
 
         clear()
-        log(chalk.bgGray.black.bold('Logado com sucesso! Agora você pode acessar todos os recursos da sua conta.'))
+        log(chalk.bgGreen.white.bold('Logado com sucesso! Agora você pode acessar todos os recursos da sua conta.'))
 
 
         setTimeout(()=> {
@@ -295,7 +286,7 @@ function deposit(){
         console.log(account.balance)
 
         if(!amount){
-            log(chalk.bgRed.black.bold('Parece que houve um erro, por favor, digite novamente.'))
+            log(chalk.bgRed.white.bold('Parece que houve um erro, por favor, digite novamente.'))
             return deposit()
         }
 
@@ -313,7 +304,7 @@ function deposit(){
 
 function getAccountBalance(){
     const account = getLoggedAccountData()
-    console.log(chalk.bgGray.black.bold(`${account.name}, O seu saldo é de R$${account.balance} !`))
+    console.log(chalk.bgGray.white.bold(`${account.name}, O seu saldo é de R$${account.balance}.`))
     setTimeout(()=> {
         clear()
         loggedOperations()
@@ -332,12 +323,12 @@ function widthdraw(){
         const account = getLoggedAccountData()
 
         if(!amount){
-            log(chalk.bgRed.black.bold('Parece que houve um erro, por favor, digite novamente.'))
+            log(chalk.bgRed.white.bold('Parece que houve um erro, por favor, digite novamente.'))
             return widthdraw()
         }
 
         if(amount > account.balance){
-            log(chalk.bgRed.black.bold('Valor insuficiente para saque, tente novamente!'))
+            log(chalk.bgRed.white.bold('Valor insuficiente para saque, tente novamente!'))
             return widthdraw()
         }
 
@@ -368,12 +359,12 @@ function investment(){
         const account = getLoggedAccountData()
 
         if(!amount || amount < 0){
-            log(chalk.bgRed.black.bold('Parece que houve um erro, por favor, digite novamente.'))
+            log(chalk.bgRed.white.bold('Parece que houve um erro, por favor, digite novamente.'))
             return investment()
         }
 
         if(account.balance < amount){
-            log(chalk.bgRed.black.bold('Parece que você não tem esse valor disponível para investimento. Tente novamente'))
+            log(chalk.bgRed.white.bold('Parece que você não tem esse valor disponível para investimento. Tente novamente'))
             return investment()
         }
 
@@ -396,7 +387,7 @@ function investment(){
 function getInvestment(){
     clear()
     const account = getLoggedAccountData()
-    log(chalk.bgGray.black.bold(`${account.name}, você tem investido um valor de R$${account.investment}.`))
+    log(chalk.bgGray.white.bold(`${account.name}, você tem investido um valor de R$${account.investment}.`))
     setTimeout(()=> {
         clear()
         loggedOperations()
@@ -416,12 +407,13 @@ function widthdrawInvestment(){
         const account = getLoggedAccountData()
 
         if(!amount || amount < 0){
-            log(chalk.bgRed.black.bold('Parece que houve um erro, por favor, digite novamente.'))
+            log(chalk.bgRed.white.bold('Parece que houve um erro, por favor, digite novamente.'))
             return widthdrawInvestment()
         }
         
         if(account.investment < amount){
-            log(chalk.bgGray.black.bold('Valor de saque de investimento indisponivel, por favor, digite um valor menor.'))
+            clear()
+            log(chalk.bgRed.white.bold('Valor de saque de investimento indisponivel, por favor, digite um valor menor.'))
             return widthdrawInvestment()
         }
 
@@ -453,19 +445,19 @@ function recoverPassword(){
 
 
         if(!accountNumber){
-            log(chalk.bgRed.black.bold('Parece que houve um erro, por favor, digite novamente.'))
+            log(chalk.bgRed.white.bold('Parece que houve um erro, por favor, digite novamente.'))
             return recoverPassword()
         }
 
         if(!fs.existsSync(`accounts/${accountNumber}.json`)){
             clear()
-            log(chalk.bgRed.black.bold('Parece que essa conta não existe, por favor, digite novamente o número da conta.'))
+            log(chalk.bgRed.white.bold('Parece que essa conta não existe, por favor, digite novamente o número da conta.'))
             return recoverPassword()
         }
 
         const account = getAccountData(accountNumber)
 
-        log(chalk.bgGray.black.bold('Para prosseguir com a sua alteração de senha, precisamos que você digite o seu nome e seu último nome corretamente.'))
+        log(chalk.bgGray.white.bold('Para prosseguir com a sua alteração de senha, precisamos que você digite o seu nome e seu último nome corretamente.'))
 
         inquirer.prompt([
             {
@@ -478,7 +470,7 @@ function recoverPassword(){
             },
             {
                 name: 'password',
-                message: 'Agora precisamos que você digite sua nova senha (minimo 8 caracter): '
+                message: 'Agora precisamos que você digite sua nova senha (minimo 8 caracteres): '
             },
             {
                 name: 'repassword',
@@ -494,7 +486,7 @@ function recoverPassword(){
 
             if(!userName || !lastName || !password || password != repassword || password.length < 8){
                 clear()
-                log(chalk.bgRed.black('Parece que ocorreu um erro, por favor, tente novamente.'))
+                log(chalk.bgRed.white.bold('Parece que ocorreu um erro, por favor, tente novamente.'))
                 return recoverPassword()
             }
 
@@ -502,7 +494,7 @@ function recoverPassword(){
 
             if(userName != account.name || lastName != account.lastname){
 
-                log(chalk.bgRed.black.bold('Parece que o seu nome ou o seu último nome está incorreto, por favor, digite novamente.'))
+                log(chalk.bgRed.white.bold('Parece que o seu nome ou o seu último nome está incorreto, por favor, digite novamente.'))
                 return recoverPassword()
             }
 
@@ -512,7 +504,7 @@ function recoverPassword(){
 
             clear()
 
-            log(chalk.bgGreen.black.bold(`${account.name}, sua senha foi alterada, agora você pode acessar a sua conta.`))
+            log(chalk.bgGreen.white.bold(`${account.name}, sua senha foi alterada, agora você pode acessar a sua conta.`))
 
             setTimeout(()=>{
                 clear()
